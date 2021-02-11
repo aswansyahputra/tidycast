@@ -29,7 +29,7 @@ get_listing <- function(x) {
 
 usedcars_raw <- 
   tibble(
-    url = paste0("https://www.carmudi.co.id/used/?page=", seq_len(1076)),
+    url = paste0("https://www.carmudi.co.id/used/?page=", seq_len(946)),
     details = future_map(url, possibly(get_listing, otherwise = NA), .progress = TRUE)
   ) %>% 
   select(-url)
@@ -51,6 +51,15 @@ usedcars <-
     price = parse_number(price),
     distance = parse_number(distance),
   )
+
+library(tidytext)
+usedcars %>% 
+  select(type) %>% 
+  unnest_tokens("zzz", type) %>% 
+  count(zzz, sort = TRUE) %>% 
+  filter(nchar(zzz) >= 3) %>% 
+  view()
+
 
 pin(usedcars, description = "The dataset about used cars in Indonesia listed at carmudi.co.id", board = "github")
 
